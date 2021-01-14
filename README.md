@@ -1,6 +1,6 @@
 # find-dupes-dired
 
-Find dupes and handle them in dired-mode.
+Find dupes using external command (fdupes/jdupes) and handle them in dired-mode.
 
 ## Installation
 
