@@ -37,6 +37,7 @@
 
 (eval-when-compile (require 'cl-lib))
 (require 'find-dired)
+(require 'subr-x)
 
 (defgroup find-dupes-dired nil
   "Run a `find-dupes-dired' command and Dired the output."
