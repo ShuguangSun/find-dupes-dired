@@ -57,9 +57,9 @@
    ((eq system-type 'gnu/linux) '("-q | xargs -d \"\\n\" ls -lUd" . "-lUd")))
   "A pair of options to produce and parse an `ls -l'-type list from `find-dupes-dired-program'.
 This is a cons of two strings (FIND-OPTION . LS-SWITCHES).
-FIND-OPTION is the option (or options) passed to
-`find-dupes-dired-program' to produce a file listing in the
-desired format. LS-SWITCHES is a set of `ls' switches that tell
+FIND-OPTION is the option (or options) passed to `find-dupes-dired-program'
+to produce a file listing in the desired format.
+LS-SWITCHES is a set of `ls' switches that tell
 dired how to parse the output of `find-dupes-dired-program'.
 
 For more information: `find-ls-option'."
@@ -266,8 +266,7 @@ If FULL-COMMAND specifies if the full command line search was done."
            (find-dupes-dired-header-render-toggle
             `(member "-r" (find-dupes-dired-search-list-toggle-flags ,search))) itemspace
            (find-dupes-dired-header-render-label "size")
-           `(:eval (format "%s" (find-dupes-dired-search-list-size ,search)))
-           ))))
+           `(:eval (format "%s" (find-dupes-dired-search-list-size ,search)))))))
 
 
 (defcustom find-dupes-dired-show-header t
