@@ -55,7 +55,7 @@
 (defcustom find-dupes-dired-ls-option
   (cond
    ((eq system-type 'windows-nt) '("-0 | xargs -0 ls -lUd" . "-lUd"))
-   ((eq system-type 'gnu/linux) '("-q | xargs -d \"\\n\" ls -lUd" . "-lUd")))
+   ((eq system-type 'gnu/linux) '("-q | xargs -d \"\\n\" ls -dilsbU" . "-dilsbU")))
   "A pair of options to produce and parse an `ls -l'-type list from `find-dupes-dired-program'.
 This is a cons of two strings (FIND-OPTION . LS-SWITCHES).
 FIND-OPTION is the option (or options) passed to `find-dupes-dired-program'
