@@ -91,15 +91,16 @@ For more information: `find-ls-option'."
 Return value of point on success, otherwise return nil.
 The next char is \\n."
   (interactive
-   (prog1				; let push-mark display its message
+   (prog1               ; let push-mark display its message
        (let ((marked-files-directories
-              (delete-dups (mapcar 'file-name-directory (dired-get-marked-files)))))
+              (delete-dups (mapcar #'file-name-directory
+                                   (dired-get-marked-files)))))
          (list (expand-file-name
-	            (completing-read "Goto in situ directory: " ; prompt
-	    	                     marked-files-directories ; table
-	    	                     nil	; predicate
-	    	                     t	; require-match
-	    	                     (car marked-files-directories)))))))
+                (completing-read "Goto in situ directory: " ; prompt
+                                 marked-files-directories ; table
+                                 nil    ; predicate
+                                 t  ; require-match
+                                 (car marked-files-directories)))))))
   ;; (setq dir (file-name-as-directory dir))
   (find-file (file-name-as-directory dir)))
 
@@ -110,82 +111,82 @@ The next char is \\n."
 (defun find-dupes-dired-filter (proc string)
   "Filter for \\[find-dupes-dired] processes."
   (let ((buf (process-buffer proc))
-	    (inhibit-read-only t))
+        (inhibit-read-only t))
     (if (buffer-name buf)
-	    (with-current-buffer buf
-	      (save-excursion
-	        (save-restriction
-	          (widen)
-	          (let ((buffer-read-only nil)
-		            (beg (point-max))
-		            (l-opt (and (consp find-dupes-dired-ls-option)
-				                (string-match "l" (cdr find-dupes-dired-ls-option))))
-		            (ls-regexp (concat "^ +[^ \t\r\n]+\\( +[^ \t\r\n]+\\) +"
-				                       "[^ \t\r\n]+ +[^ \t\r\n]+\\( +[^[:space:]]+\\)")))
-		        (goto-char beg)
-		        (insert string)
+        (with-current-buffer buf
+          (save-excursion
+            (save-restriction
+              (widen)
+              (let ((buffer-read-only nil)
+                    (beg (point-max))
+                    (l-opt (and (consp find-dupes-dired-ls-option)
+                        (string-match "l" (cdr find-dupes-dired-ls-option))))
+                    (ls-regexp (concat "^ +[^ \t\r\n]+\\( +[^ \t\r\n]+\\) +"
+                           "[^ \t\r\n]+ +[^ \t\r\n]+\\( +[^[:space:]]+\\)")))
+                (goto-char beg)
+                (insert string)
                 (goto-char (point-min))
                 ;; FIXME how to remove emptys before pipe to ls?
                 (while (re-search-forward "^[ ]\*ls: cannot access" nil t)
                   (save-excursion
-	                (delete-region (point) (progn (forward-visible-line 0) (point))))
-	              (delete-region (point) (progn (end-of-visible-line) (+ (point) 1))))
-		        (goto-char beg)
-		        (or (looking-at "^")
-		            (forward-line 1))
-		        (while (looking-at "^")
-		          (insert "  ")
-		          (forward-line 1))
-		        ;; Convert ` ./FILE' to ` FILE'
-		        ;; This would lose if the current chunk of output
-		        ;; starts or ends within the ` ./', so back up a bit:
-		        (goto-char (- beg 3))	; no error if < 0
-		        (while (search-forward " ./" nil t)
-		          (delete-region (point) (- (point) 2)))
-		        ;; Pad the number of links and file size.  This is a
-		        ;; quick and dirty way of getting the columns to line up
-		        ;; most of the time, but it's not foolproof.
-		        (when l-opt
-		          (goto-char beg)
-		          (goto-char (line-beginning-position))
-		          (while (re-search-forward ls-regexp nil t)
-		            (replace-match (format "%4s" (match-string 1)) nil nil nil 1)
-		            (replace-match (format "%9s" (match-string 2)) nil nil nil 2)
-		            (forward-line 1)))
-		        ;; all the complete lines in the unprocessed
-		        ;; output and process it to add text properties.
-		        (goto-char (point-max))
-		        (if (search-backward "\n" (process-mark proc) t)
-		            (progn
-		              (dired-insert-set-properties (process-mark proc)
-						                           (1+ (point)))
-		              (move-marker (process-mark proc) (1+ (point)))))))))
+                    (delete-region (point) (progn (forward-visible-line 0) (point))))
+                  (delete-region (point) (progn (end-of-visible-line) (+ (point) 1))))
+                (goto-char beg)
+                (or (looking-at "^")
+                    (forward-line 1))
+                (while (looking-at "^")
+                  (insert "  ")
+                  (forward-line 1))
+                ;; Convert ` ./FILE' to ` FILE'
+                ;; This would lose if the current chunk of output
+                ;; starts or ends within the ` ./', so back up a bit:
+                (goto-char (- beg 3))   ; no error if < 0
+                (while (search-forward " ./" nil t)
+                  (delete-region (point) (- (point) 2)))
+                ;; Pad the number of links and file size.  This is a
+                ;; quick and dirty way of getting the columns to line up
+                ;; most of the time, but it's not foolproof.
+                (when l-opt
+                  (goto-char beg)
+                  (goto-char (line-beginning-position))
+                  (while (re-search-forward ls-regexp nil t)
+                    (replace-match (format "%4s" (match-string 1)) nil nil nil 1)
+                    (replace-match (format "%9s" (match-string 2)) nil nil nil 2)
+                    (forward-line 1)))
+                ;; all the complete lines in the unprocessed
+                ;; output and process it to add text properties.
+                (goto-char (point-max))
+                (if (search-backward "\n" (process-mark proc) t)
+                    (progn
+                      (dired-insert-set-properties (process-mark proc)
+                                                   (1+ (point)))
+                      (move-marker (process-mark proc) (1+ (point)))))))))
       ;; The buffer has been killed.
       (delete-process proc))))
 
 (defun find-dupes-dired-sentinel (proc state)
   "Sentinel for \\[find-dupes-dired] processes."
   (let ((buf (process-buffer proc))
-	    (inhibit-read-only t))
+        (inhibit-read-only t))
     (if (buffer-name buf)
-	    (with-current-buffer buf
-	      (let ((buffer-read-only nil))
-	        (save-excursion
-	          (goto-char (point-max))
-	          (let ((point (point)))
-		        (insert "\n  " find-dupes-dired-program " " state)
-		        (forward-char -1)		;Back up before \n at end of STATE.
-		        (insert " at " (substring (current-time-string) 0 19))
-		        (dired-insert-set-properties point (point)))
-	          (setq mode-line-process
-		            (concat ":" (symbol-name (process-status proc))))
-	          ;; Since the buffer and mode line will show that the
-	          ;; process is dead, we can delete it now.  Otherwise it
-	          ;; will stay around until M-x list-processes.
-	          (delete-process proc)
-	          (force-mode-line-update)
+        (with-current-buffer buf
+          (let ((buffer-read-only nil))
+            (save-excursion
+              (goto-char (point-max))
+              (let ((point (point)))
+                (insert "\n  " find-dupes-dired-program " " state)
+                (forward-char -1)       ;Back up before \n at end of STATE.
+                (insert " at " (substring (current-time-string) 0 19))
+                (dired-insert-set-properties point (point)))
+              (setq mode-line-process
+                    (concat ":" (symbol-name (process-status proc))))
+              ;; Since the buffer and mode line will show that the
+              ;; process is dead, we can delete it now.  Otherwise it
+              ;; will stay around until M-x list-processes.
+              (delete-process proc)
+              (force-mode-line-update)
               (find-dupes-dired-maybe-show-header)))
-	      (message "find-dupes-dired %s finished." (current-buffer))))))
+          (message "find-dupes-dired %s finished." (current-buffer))))))
 
 
 (cl-defstruct (find-dupes-dired-search-list
@@ -208,10 +209,11 @@ Becomes buffer local in `find-dupes-dired' buffers.")
   "Create the command line.
 RECURSE determines if search will be recurse and FLAGS are command line flags."
   (let* ((size (find-dupes-dired-search-list-size find-dupes-dired-cur-search))
-         (toggle-flags (find-dupes-dired-search-list-toggle-flags find-dupes-dired-cur-search))
+         (toggle-flags (find-dupes-dired-search-list-toggle-flags
+                        find-dupes-dired-cur-search))
          (command-line (append toggle-flags (unless (string-blank-p size)
                                               (list "--size" size)))))
-    (mapconcat 'identity (delete-dups command-line) " ")))
+    (mapconcat #'identity (delete-dups command-line) " ")))
 
 
 (defface find-dupes-dired-toggle-on-face
@@ -251,7 +253,8 @@ If ON is non nil, render \"on\" string, otherwise render \"off\"
 string."
   `(:eval (let* ((on ,on)
                  (value (if on "on " "off"))
-                 (face (if on 'find-dupes-dired-toggle-on-face 'find-dupes-dired-toggle-off-face)))
+                 (face (if on 'find-dupes-dired-toggle-on-face
+                         'find-dupes-dired-toggle-off-face)))
             (propertize value 'font-lock-face `(bold ,face)))))
 
 
@@ -265,7 +268,8 @@ If FULL-COMMAND specifies if the full command line search was done."
           (list
            (find-dupes-dired-header-render-label "recurse")
            (find-dupes-dired-header-render-toggle
-            `(member "-r" (find-dupes-dired-search-list-toggle-flags ,search))) itemspace
+            `(member "-r" (find-dupes-dired-search-list-toggle-flags ,search)))
+           itemspace
            (find-dupes-dired-header-render-label "size")
            `(:eval (format "%s" (find-dupes-dired-search-list-size ,search)))))))
 
@@ -287,8 +291,8 @@ The command run (after changing into `car' DIR) is essentially
 
     find-dupes ARGS DIR -ls
 
-except that the car of the variable `find-dupes-dired-ls-option' specifies what to
-use in place of \"-ls\" as the final argument.
+except that the car of the variable `find-dupes-dired-ls-option' specifies
+what to use in place of \"-ls\" as the final argument.
 Optional argument SEARCH an existing `find-dupes-dired-search-list'."
    (let ((dired-buffers dired-buffers)
          dir-string)
@@ -297,7 +301,7 @@ Optional argument SEARCH an existing `find-dupes-dired-search-list'."
     (setq dir (mapcar (lambda (x)
                         ;; Check that it's really a directory.
                         (or (file-directory-p x)
-	                        (error "`find-dupes-dired' needs a directory: %s" x))
+                            (error "`find-dupes-dired' needs a directory: %s" x))
                         (file-name-as-directory (expand-file-name x)))
                       dir))
 
@@ -309,16 +313,16 @@ Optional argument SEARCH an existing `find-dupes-dired-search-list'."
     ;; it first, if it is.
     (let ((find-dupes (get-buffer-process (current-buffer))))
       (when find-dupes
-	    (if (or (not (eq (process-status find-dupes) 'run))
-		        (yes-or-no-p
-		         (format-message "A `find-dupes' process is running; kill it? ")))
-	        (condition-case nil
-		        (progn
-		          (interrupt-process find-dupes)
-		          (sit-for 1)
-		          (delete-process find-dupes))
-	          (error nil))
-	      (error "Cannot have two processes in `%s' at once" (buffer-name)))))
+        (if (or (not (eq (process-status find-dupes) 'run))
+                (yes-or-no-p
+                 (format-message "A `find-dupes' process is running; kill it? ")))
+            (condition-case nil
+                (progn
+                  (interrupt-process find-dupes)
+                  (sit-for 1)
+                  (delete-process find-dupes))
+              (error nil))
+          (error "Cannot have two processes in `%s' at once" (buffer-name)))))
 
     (widen)
     (setq buffer-read-only nil)
@@ -333,8 +337,8 @@ Optional argument SEARCH an existing `find-dupes-dired-search-list'."
                                       :size find-dupes-dired-size
                                       :toggle-flags find-dupes-dired-toggle-command-line-flags)))
     (setq default-directory (car dir)
-	      find-dupes-dired-args args	      ; save for next interactive call
-	      args (concat find-dupes-dired-program
+          find-dupes-dired-args args          ; save for next interactive call
+          args (concat find-dupes-dired-program
                        " "
                        args
                        " "
@@ -342,13 +346,13 @@ Optional argument SEARCH an existing `find-dupes-dired-search-list'."
                        " "
                        dir-string
                        " "
-		               (if (string-match "\\`\\(.*\\) {} \\(\\\\;\\|+\\)\\'"
-					                     (car find-dupes-dired-ls-option))
-			               (format "%s %s %s"
-				                   (match-string 1 (car find-dupes-dired-ls-option))
-				                   (shell-quote-argument "{}")
-				                   find-exec-terminator)
-			             (car find-dupes-dired-ls-option))))
+                       (if (string-match "\\`\\(.*\\) {} \\(\\\\;\\|+\\)\\'"
+                                         (car find-dupes-dired-ls-option))
+                           (format "%s %s %s"
+                                   (match-string 1 (car find-dupes-dired-ls-option))
+                                   (shell-quote-argument "{}")
+                                   find-exec-terminator)
+                         (car find-dupes-dired-ls-option))))
     ;; Start the find-dupes process.
     (shell-command (concat args "&") (current-buffer))
     ;; The next statement will bomb in classic dired (no optional arg allowed)
@@ -364,18 +368,19 @@ Optional argument SEARCH an existing `find-dupes-dired-search-list'."
     (make-local-variable 'dired-sort-inhibit)
     (setq dired-sort-inhibit t)
     (set (make-local-variable 'revert-buffer-function)
-	     `(lambda (ignore-auto noconfirm)
-	        (find-dupes-dired--run ,dir ,find-dupes-dired-args)))
+         `(lambda (ignore-auto noconfirm)
+            (find-dupes-dired--run ,dir ,find-dupes-dired-args)))
     ;; Set subdir-alist so that Tree Dired will work:
     (if (fboundp 'dired-simple-subdir-alist)
-	    ;; will work even with nested dired format (dired-nstd.el,v 1.15
-	    ;; and later)
-	    (dired-simple-subdir-alist)
+        ;; will work even with nested dired format (dired-nstd.el,v 1.15
+        ;; and later)
+        (dired-simple-subdir-alist)
       ;; else we have an ancient tree dired (or classic dired, where
       ;; this does no harm)
       (set (make-local-variable 'dired-subdir-alist)
-	       (list (cons default-directory (point-min-marker)))))
-    (set (make-local-variable 'dired-subdir-switches) find-dupes-dired-ls-subdir-switches)
+           (list (cons default-directory (point-min-marker)))))
+    (set (make-local-variable 'dired-subdir-switches)
+         find-dupes-dired-ls-subdir-switches)
     (setq buffer-read-only nil)
     ;; Subdir headlerline must come first because the first marker in
     ;; subdir-alist points there.
@@ -400,8 +405,8 @@ The command run (after changing into DIR) is essentially
 
     find-dupes . \\( ARGS \\) -ls
 
-except that the car of the variable `find-dupes-dired-ls-option' specifies what to
-use in place of \"-ls\" as the final argument."
+except that the car of the variable `find-dupes-dired-ls-option' specifies
+what to use in place of \"-ls\" as the final argument."
   (interactive)
   (let ((prefix current-prefix-arg)
         (ndir 1)
@@ -412,7 +417,7 @@ use in place of \"-ls\" as the final argument."
                        collect (read-directory-name "Run find-dupes in directory: " nil "" t)))
 
     (setq args (read-string "Run find-dupes (with args): " find-dupes-dired-args
-				            '(find-dupes-dired-args-history . 1)))
+                            '(find-dupes-dired-args-history . 1)))
     (find-dupes-dired--run dir args)))
 
 (defun find-dupes-dired--rerun ()
@@ -433,7 +438,8 @@ Returns the new list."
 (defun find-dupes-dired-rerun-toggle-flag (flag)
   "Toggle FLAG in `find-dupes-dired-cur-search`."
   (setf (find-dupes-dired-search-list-toggle-flags find-dupes-dired-cur-search)
-        (find-dupes-dired-list-toggle flag (find-dupes-dired-search-list-toggle-flags find-dupes-dired-cur-search)))
+        (find-dupes-dired-list-toggle flag (find-dupes-dired-search-list-toggle-flags
+                                            find-dupes-dired-cur-search)))
   (find-dupes-dired--rerun))
 
 (defun find-dupes-dired-rerun-toggle-recurse ()
