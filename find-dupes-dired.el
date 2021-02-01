@@ -109,7 +109,8 @@ The next char is \\n."
 (defvar find-dupes-dired-ls-subdir-switches find-ls-subdir-switches)
 
 (defun find-dupes-dired-filter (proc string)
-  "Filter for \\[find-dupes-dired] processes."
+  "Filter for \\[find-dupes-dired] processes.
+This is analogous to `find-dired-filter'."
   (let ((buf (process-buffer proc))
         (inhibit-read-only t))
     (if (buffer-name buf)
@@ -165,7 +166,8 @@ The next char is \\n."
       (delete-process proc))))
 
 (defun find-dupes-dired-sentinel (proc state)
-  "Sentinel for \\[find-dupes-dired] processes."
+  "Sentinel for \\[find-dupes-dired] processes.
+This is analogous to `find-dired-sentinel'."
   (let ((buf (process-buffer proc))
         (inhibit-read-only t))
     (if (buffer-name buf)
