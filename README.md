@@ -14,7 +14,7 @@ It needs "fdupes" in gnu/linux or "jdupes" in Windows, or others by setting
 `find-dupes-dired-program` and `find-dupes-dired-ls-option`.
 
 Run `find-dupes-dired`.
-
+With prefix argument, find dupes in multiple directories.
 
 # Reference
 

@@ -289,6 +289,8 @@ If FULL-COMMAND specifies if the full command line search was done."
 
 (defun find-dupes-dired--run (dir args &optional search)
   "Run `find-dupes' and go into Dired mode on a buffer of the output.
+With prefix argument, find dupes in multiple directories.
+
 The command run (after changing into `car' DIR) is essentially
 
     find-dupes ARGS DIR -ls
