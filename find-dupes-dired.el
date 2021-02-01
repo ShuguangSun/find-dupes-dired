@@ -400,7 +400,7 @@ Optional argument SEARCH an existing `find-dupes-dired-search-list'."
       (move-marker (process-mark proc) (point) (current-buffer)))
     (setq mode-line-process '(":%s"))))
 
-
+;;;###autoload
 (defun find-dupes-dired ()
   "Run `find-dupes' and go into Dired mode on a buffer of the output.
 The command run (after changing into DIR) is essentially
