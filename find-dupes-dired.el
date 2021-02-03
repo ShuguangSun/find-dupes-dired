@@ -355,7 +355,7 @@ Optional argument SEARCH an existing `find-dupes-dired-search-list'."
              :toggle-flags find-dupes-dired-toggle-command-line-flags)))
     (setq default-directory (car dir)
           find-dupes-dired-args args          ; save for next interactive call
-          args (concat find-dupes-dired-program
+          args (concat (shell-quote-argument find-dupes-dired-program)
                        " "
                        args
                        " "
