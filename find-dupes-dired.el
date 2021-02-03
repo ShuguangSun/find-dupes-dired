@@ -309,9 +309,6 @@ Optional argument SEARCH an existing `find-dupes-dired-search-list'."
   (let ((dired-buffers dired-buffers)
         dir-string)
 
-    (if (not (executable-find find-dupes-dired-program))
-        (error (format "%s is not in the path!" find-dupes-dired-program)))
-
     (unless (listp dir) (setq dir (list dir)))
     (setq dir (mapcar (lambda (x)
                         ;; Check that it's really a directory.
@@ -430,6 +427,9 @@ The command run (after changing into DIR) is essentially
 except that the car of the variable `find-dupes-dired-ls-option' specifies
 what to use in place of \"-ls\" as the final argument."
   (interactive)
+  (if (not (executable-find find-dupes-dired-program))
+      (error (format "%s is not in the path!" find-dupes-dired-program)))
+
   (let ((prefix current-prefix-arg)
         (ndir 1)
         dir
