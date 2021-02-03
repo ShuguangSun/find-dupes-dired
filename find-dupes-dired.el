@@ -49,8 +49,10 @@
 
 (defcustom find-dupes-dired-program
   (cond
-   ((eq system-type 'windows-nt) (purecopy "jdupes"))
-   ((eq system-type 'gnu/linux) (purecopy "fdupes")))
+   ((eq system-type 'windows-nt) (or (executable-find "jdupes")
+                                     (purecopy "jdupes")))
+   ((eq system-type 'gnu/linux) (or (executable-find "fdupes")
+                                    (purecopy "fdupes"))))
   "The default `find-dupes-dired' program."
   :type 'string
   :group 'find-dupes-dired)
@@ -68,8 +70,8 @@ dired how to parse the output of `find-dupes-dired-program'.
 
 For more information: `find-ls-option'."
   :type '(cons :tag "`find-dupes-dired' arguments pair"
-              (string :tag "`find-dupes-dired-program' Option")
-              (string :tag "Ls Switches"))
+               (string :tag "`find-dupes-dired-program' Option")
+               (string :tag "Ls Switches"))
   :group 'find-dupes-dired)
 
 (defcustom find-dupes-dired-toggle-command-line-flags '("-r")
@@ -127,9 +129,9 @@ This is analogous to `find-dired-filter'."
               (let ((buffer-read-only nil)
                     (beg (point-max))
                     (l-opt (and (consp find-dupes-dired-ls-option)
-                        (string-match "l" (cdr find-dupes-dired-ls-option))))
+                                (string-match "l" (cdr find-dupes-dired-ls-option))))
                     (ls-regexp (concat "^ +[^ \t\r\n]+\\( +[^ \t\r\n]+\\) +"
-                           "[^ \t\r\n]+ +[^ \t\r\n]+\\( +[^[:space:]]+\\)")))
+                                       "[^ \t\r\n]+ +[^ \t\r\n]+\\( +[^[:space:]]+\\)")))
                 (goto-char beg)
                 (insert string)
                 (goto-char (point-min))
@@ -304,8 +306,11 @@ The command run (after changing into `car' DIR) is essentially
 except that the car of the variable `find-dupes-dired-ls-option' specifies
 what to use in place of \"-ls\" as the final argument.
 Optional argument SEARCH an existing `find-dupes-dired-search-list'."
-   (let ((dired-buffers dired-buffers)
-         dir-string)
+  (let ((dired-buffers dired-buffers)
+        dir-string)
+
+    (if (not (executable-find find-dupes-dired-program))
+        (error (format "%s is not in the path!" find-dupes-dired-program)))
 
     (unless (listp dir) (setq dir (list dir)))
     (setq dir (mapcar (lambda (x)
