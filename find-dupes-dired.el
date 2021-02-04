@@ -29,7 +29,7 @@
 
 ;; If needed, set `find-dupes-dired-verbose' to t for debug message.
 
-;; It needs "fdupes" in gnu/linux or "jdupes" in Windows, or others by setting
+;; It needs "jdupes" in Windows and "fdupes" in other system, or others by setting
 ;; `find-dupes-dired-program` and `find-dupes-dired-ls-option`.
 
 ;; Thanks [fd-dired](https://github.com/yqrashawn/fd-dired/blob/master/fd-dired.el)
@@ -51,8 +51,7 @@
   (cond
    ((eq system-type 'windows-nt) (or (executable-find "jdupes")
                                      (purecopy "jdupes")))
-   ((eq system-type 'gnu/linux) (or (executable-find "fdupes")
-                                    (purecopy "fdupes"))))
+   (t (or (executable-find "fdupes") (purecopy "fdupes"))))
   "The default `find-dupes-dired' program."
   :type 'string
   :group 'find-dupes-dired)
@@ -60,7 +59,7 @@
 (defcustom find-dupes-dired-ls-option
   (cond
    ((eq system-type 'windows-nt) '("-0 | xargs -0 ls -lUd" . "-lUd"))
-   ((eq system-type 'gnu/linux) '("-q | xargs -d \"\\n\" ls -dilsbU" . "-dilsbU")))
+   (t '("-q | xargs -d \"\\n\" ls -dilsbU" . "-dilsbU")))
   "A pair of options to produce and parse an `ls -l'-type list from `find-dupes-dired-program'.
 This is a cons of two strings (FIND-OPTION . LS-SWITCHES).
 FIND-OPTION is the option (or options) passed to `find-dupes-dired-program'
