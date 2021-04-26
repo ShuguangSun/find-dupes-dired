@@ -58,9 +58,9 @@
 
 (defcustom find-dupes-dired-ls-option
   (cond
-   ((eq system-type 'windows-nt) '("-0 | xargs -0 ls -lUd" . "-lUd"))
+   ((eq system-type 'windows-nt) '("-0 | xargs -0 ls -lUd 2>stderr" . "-lUd"))
    ((eq system-type 'darwin) '("-q | xargs -d \"\\n\" ls -lsU 2>/dev/null" . "-dilsbU"))
-   (t '("-q | xargs -d \"\\n\" ls -dilsbU" . "-dilsbU")))
+   (t '("-q | xargs -d \"\\n\" ls -dilsbU 2>/dev/null" . "-dilsbU")))
   "A pair of options to produce and parse an `ls -l'-type list from `find-dupes-dired-program'.
 This is a cons of two strings (FIND-OPTION . LS-SWITCHES).
 FIND-OPTION is the option (or options) passed to `find-dupes-dired-program'
@@ -135,12 +135,6 @@ This is analogous to `find-dired-filter'."
                 (goto-char beg)
                 (insert string)
                 (goto-char (point-min))
-                ;; FIXME how to remove emptys before pipe to ls?
-                (while (re-search-forward "^[ ]\*ls: cannot access" nil t)
-                  (save-excursion
-                    (delete-region (point) (progn (forward-visible-line 0) (point))))
-                  (delete-region (point) (progn (end-of-visible-line) (+ (point) 1))))
-                (goto-char beg)
                 (or (looking-at "^")
                     (forward-line 1))
                 (while (looking-at "^")
