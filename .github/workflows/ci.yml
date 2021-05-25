@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     paths-ignore:
-    - '**.md'
+      - '**.md'
   pull_request:
     paths-ignore:
       - '**.md'
@@ -14,9 +14,6 @@ jobs:
     strategy:
       matrix:
         emacs_version:
-          - 25.1
-          - 25.2
-          - 25.3
           - 26.3
           - 27.2
           - snapshot
