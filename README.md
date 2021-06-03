@@ -1,3 +1,6 @@
+[![MELPA](https://melpa.org/packages/find-dupes-dired-badge.svg)](https://melpa.org/#/find-dupes-dired)
+[![MELPA Stable](https://stable.melpa.org/packages/find-dupes-dired-badge.svg)](https://stable.melpa.org/#/find-dupes-dired)
+
 # find-dupes-dired
 
 Find dupes using external command (fdupes/jdupes) and handle them in dired-mode.
