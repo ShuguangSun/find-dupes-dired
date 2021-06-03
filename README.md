@@ -1,5 +1,7 @@
 [![MELPA](https://melpa.org/packages/find-dupes-dired-badge.svg)](https://melpa.org/#/find-dupes-dired)
 [![MELPA Stable](https://stable.melpa.org/packages/find-dupes-dired-badge.svg)](https://stable.melpa.org/#/find-dupes-dired)
+[![Build Status](https://github.com/ShuguangSun/find-dupes-dired/workflows/CI/badge.svg)](https://github.com/ShuguangSun/find-dupes-dired/actions)
+[![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 
 # find-dupes-dired
 
